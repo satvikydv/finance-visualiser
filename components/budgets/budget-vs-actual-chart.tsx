@@ -1,19 +1,10 @@
 'use client';
 
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import dynamic from 'next/dynamic';
 import { Budget } from '@/lib/schemas';
 import { useCurrency } from '@/hooks/useCurrency';
 import { formatCurrency } from '@/lib/utils';
-
-// Dynamically import recharts components to avoid type conflicts
-const BarChart = dynamic(() => import('recharts').then(mod => ({ default: mod.BarChart })), { ssr: false });
-const Bar = dynamic(() => import('recharts').then(mod => ({ default: mod.Bar })), { ssr: false });
-const XAxis = dynamic(() => import('recharts').then(mod => ({ default: mod.XAxis })), { ssr: false });
-const YAxis = dynamic(() => import('recharts').then(mod => ({ default: mod.YAxis })), { ssr: false });
-const CartesianGrid = dynamic(() => import('recharts').then(mod => ({ default: mod.CartesianGrid })), { ssr: false });
-const Tooltip = dynamic(() => import('recharts').then(mod => ({ default: mod.Tooltip })), { ssr: false });
-const Legend = dynamic(() => import('recharts').then(mod => ({ default: mod.Legend })), { ssr: false });
+import * as Recharts from 'recharts';
 
 interface BudgetVsActualChartProps {
   budgets: Budget[];
@@ -32,6 +23,14 @@ export default function BudgetVsActualChart({ budgets, categorySpending }: Budge
     budget: budget.monthlyLimit,
     actual: categorySpending[budget.category] || 0,
   }));
+
+  const BarChart = Recharts.BarChart as any;
+  const Bar = Recharts.Bar as any;
+  const XAxis = Recharts.XAxis as any;
+  const YAxis = Recharts.YAxis as any;
+  const CartesianGrid = Recharts.CartesianGrid as any;
+  const Tooltip = Recharts.Tooltip as any;
+  const Legend = Recharts.Legend as any;
 
   return (
     <Card>
@@ -57,7 +56,7 @@ export default function BudgetVsActualChart({ budgets, categorySpending }: Budge
               width={80}
             />
             <Tooltip 
-              formatter={(value, name) => [formatCurrencyForChart(value as number), name === 'budget' ? 'Budget' : 'Actual']}
+              formatter={(value: any, name: any) => [formatCurrencyForChart(value as number), name === 'budget' ? 'Budget' : 'Actual']}
               labelStyle={{ color: 'hsl(var(--foreground))' }}
               contentStyle={{ 
                 backgroundColor: 'hsl(var(--background))',

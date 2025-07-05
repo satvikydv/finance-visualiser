@@ -1,15 +1,9 @@
 'use client';
 
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import dynamic from 'next/dynamic';
 import { useCurrency } from '@/hooks/useCurrency';
 import { formatCurrency } from '@/lib/utils';
-
-// Dynamically import recharts components to avoid type conflicts
-const PieChart = dynamic(() => import('recharts').then(mod => ({ default: mod.PieChart })), { ssr: false });
-const Pie = dynamic(() => import('recharts').then(mod => ({ default: mod.Pie })), { ssr: false });
-const Cell = dynamic(() => import('recharts').then(mod => ({ default: mod.Cell })), { ssr: false });
-const Tooltip = dynamic(() => import('recharts').then(mod => ({ default: mod.Tooltip })), { ssr: false });
+import * as Recharts from 'recharts';
 
 interface CategoryPieChartProps {
   data: { category: string; amount: number }[];
@@ -36,6 +30,11 @@ export default function CategoryPieChart({ data }: CategoryPieChartProps) {
     return formatCurrency(value, currency);
   };
 
+  const PieChart = Recharts.PieChart as any;
+  const Pie = Recharts.Pie as any;
+  const Cell = Recharts.Cell as any;
+  const Tooltip = Recharts.Tooltip as any;
+
   return (
     <Card className="col-span-1 md:col-span-2">
       <CardHeader>
@@ -49,7 +48,7 @@ export default function CategoryPieChart({ data }: CategoryPieChartProps) {
               cx="50%"
               cy="50%"
               labelLine={false}
-              label={({ category, percent }) => `${category} (${(percent * 100).toFixed(0)}%)`}
+              label={({ category, percent }: any) => `${category} (${(percent * 100).toFixed(0)}%)`}
               outerRadius={80}
               fill="#8884d8"
               dataKey="amount"
@@ -59,7 +58,7 @@ export default function CategoryPieChart({ data }: CategoryPieChartProps) {
               ))}
             </Pie>
             <Tooltip 
-              formatter={(value) => [formatCurrencyForChart(value as number), 'Amount']}
+              formatter={(value: any) => [formatCurrencyForChart(value as number), 'Amount']}
               contentStyle={{ 
                 backgroundColor: 'hsl(var(--background))',
                 border: '1px solid hsl(var(--border))',
