@@ -1,7 +1,7 @@
 'use client';
 
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip, Legend } from 'recharts';
+import { PieChart, Pie, Cell, Tooltip } from 'recharts';
 import { useCurrency } from '@/hooks/useCurrency';
 import { formatCurrency } from '@/lib/utils';
 
@@ -36,8 +36,8 @@ export default function CategoryPieChart({ data }: CategoryPieChartProps) {
         <CardTitle>Expenses by Category</CardTitle>
       </CardHeader>
       <CardContent>
-        <ResponsiveContainer width="100%" height={300}>
-          <PieChart margin={{ left: 20, right: 20, top: 20, bottom: 20 }}>
+        <div style={{ width: '100%', height: 300 }}>
+          <PieChart width={400} height={300} margin={{ left: 20, right: 20, top: 20, bottom: 20 }}>
             <Pie
               data={data}
               cx="50%"
@@ -61,7 +61,7 @@ export default function CategoryPieChart({ data }: CategoryPieChartProps) {
               }}
             />
           </PieChart>
-        </ResponsiveContainer>
+        </div>
       </CardContent>
     </Card>
   );

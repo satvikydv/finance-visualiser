@@ -1,7 +1,7 @@
 'use client';
 
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
+import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip } from 'recharts';
 import { useCurrency } from '@/hooks/useCurrency';
 import { formatCurrency } from '@/lib/utils';
 
@@ -22,8 +22,8 @@ export default function MonthlyExpensesChart({ data }: MonthlyExpensesChartProps
         <CardTitle>Monthly Expenses</CardTitle>
       </CardHeader>
       <CardContent>
-        <ResponsiveContainer width="100%" height={300}>
-          <BarChart data={data} margin={{ left: 20, right: 20, top: 20, bottom: 20 }}>
+        <div style={{ width: '100%', height: 300 }}>
+          <BarChart width={800} height={300} data={data} margin={{ left: 20, right: 20, top: 20, bottom: 20 }}>
             <CartesianGrid strokeDasharray="3 3" className="stroke-muted" />
             <XAxis 
               dataKey="month" 
@@ -47,7 +47,7 @@ export default function MonthlyExpensesChart({ data }: MonthlyExpensesChartProps
             />
             <Bar dataKey="amount" fill="hsl(var(--primary))" radius={[4, 4, 0, 0]} />
           </BarChart>
-        </ResponsiveContainer>
+        </div>
       </CardContent>
     </Card>
   );
