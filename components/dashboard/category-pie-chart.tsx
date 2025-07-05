@@ -3,7 +3,16 @@
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { useCurrency } from '@/hooks/useCurrency';
 import { formatCurrency } from '@/lib/utils';
-import * as Recharts from 'recharts';
+import {
+  Chart as ChartJS,
+  ArcElement,
+  Tooltip as ChartTooltip,
+  Legend,
+} from 'chart.js';
+import { Pie } from 'react-chartjs-2';
+import { useMemo } from 'react';
+
+ChartJS.register(ArcElement, ChartTooltip, Legend);
 
 interface CategoryPieChartProps {
   data: { category: string; amount: number }[];
@@ -26,14 +35,36 @@ const COLORS = [
 export default function CategoryPieChart({ data }: CategoryPieChartProps) {
   const { currency } = useCurrency();
 
-  const formatCurrencyForChart = (value: number) => {
-    return formatCurrency(value, currency);
-  };
+  const chartData = useMemo(() => ({
+    labels: data.map((item) => item.category),
+    datasets: [
+      {
+        data: data.map((item) => item.amount),
+        backgroundColor: COLORS,
+        borderWidth: 1,
+      },
+    ],
+  }), [data]);
 
-  const PieChart = Recharts.PieChart as any;
-  const Pie = Recharts.Pie as any;
-  const Cell = Recharts.Cell as any;
-  const Tooltip = Recharts.Tooltip as any;
+  const options = useMemo(() => ({
+    responsive: true,
+    plugins: {
+      legend: {
+        position: 'bottom' as const,
+        labels: { font: { size: 14 } },
+      },
+      tooltip: {
+        callbacks: {
+          label: (context: any) => {
+            const value = context.parsed;
+            const total = context.dataset.data.reduce((sum: number, v: number) => sum + v, 0);
+            const percent = total > 0 ? (value / total) * 100 : 0;
+            return `${formatCurrency(value, currency)} (${percent.toFixed(1)}%)`;
+          },
+        },
+      },
+    },
+  }), [currency, formatCurrency]);
 
   return (
     <Card className="col-span-1 md:col-span-2">
@@ -41,32 +72,15 @@ export default function CategoryPieChart({ data }: CategoryPieChartProps) {
         <CardTitle>Expenses by Category</CardTitle>
       </CardHeader>
       <CardContent>
-        <div style={{ width: '100%', height: 300 }}>
-          <PieChart width={400} height={300} margin={{ left: 20, right: 20, top: 20, bottom: 20 }}>
-            <Pie
-              data={data}
-              cx="50%"
-              cy="50%"
-              labelLine={false}
-              label={({ category, percent }: any) => `${category} (${(percent * 100).toFixed(0)}%)`}
-              outerRadius={80}
-              fill="#8884d8"
-              dataKey="amount"
-            >
-              {data.map((entry, index) => (
-                <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
-              ))}
-            </Pie>
-            <Tooltip 
-              formatter={(value: any) => [formatCurrencyForChart(value as number), 'Amount']}
-              contentStyle={{ 
-                backgroundColor: 'hsl(var(--background))',
-                border: '1px solid hsl(var(--border))',
-                borderRadius: '8px'
-              }}
-            />
-          </PieChart>
-        </div>
+        {data.length === 0 ? (
+          <p className="text-muted-foreground text-center py-8">
+            No category data available.
+          </p>
+        ) : (
+          <div className="h-[300px] w-full flex items-center justify-center">
+            <Pie data={chartData} options={options} />
+          </div>
+        )}
       </CardContent>
     </Card>
   );
