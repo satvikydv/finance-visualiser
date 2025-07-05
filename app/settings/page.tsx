@@ -10,11 +10,12 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Bell, User } from 'lucide-react';
 import { useState } from 'react';
 import { toast } from 'sonner';
+import { useCurrency } from '@/hooks/useCurrency';
 
 export default function SettingsPage() {
   const [notifications, setNotifications] = useState(true);
-  const [currency, setCurrency] = useState('INR');
   const [theme, setTheme] = useState('system');
+  const { currency, setCurrency } = useCurrency();
 
   const handleSaveSettings = () => {
     // Here you would save the settings to your database or local storage

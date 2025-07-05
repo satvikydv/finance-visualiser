@@ -9,6 +9,8 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { Pencil, Trash2, Plus } from 'lucide-react';
 import { format } from 'date-fns';
 import { Alert, AlertDescription } from '@/components/ui/alert';
+import { useCurrency } from '@/hooks/useCurrency';
+import { formatCurrency } from '@/lib/utils';
 
 interface TransactionsTableProps {
   transactions: Transaction[];
@@ -24,13 +26,7 @@ export default function TransactionsTable({
   onAdd 
 }: TransactionsTableProps) {
   const [deleteConfirm, setDeleteConfirm] = useState<string | null>(null);
-
-  const formatCurrency = (amount: number) => {
-    return new Intl.NumberFormat('en-US', {
-      style: 'currency',
-      currency: 'USD',
-    }).format(amount);
-  };
+  const { currency } = useCurrency();
 
   const handleDelete = (id: string) => {
     if (deleteConfirm === id) {
@@ -86,21 +82,19 @@ export default function TransactionsTable({
                       <Badge variant="secondary">{transaction.category}</Badge>
                     </TableCell>
                     <TableCell className="text-right font-semibold text-red-600 dark:text-red-400">
-                      -{formatCurrency(transaction.amount)}
+                      -{formatCurrency(transaction.amount, currency)}
                     </TableCell>
                     <TableCell className="text-right">
                       <div className="flex gap-2 justify-end">
                         <Button
-                          variant="ghost"
-                          size="sm"
                           onClick={() => onEdit(transaction)}
+                          className="h-8 w-8 p-0"
                         >
                           <Pencil className="h-4 w-4" />
                         </Button>
                         <Button
-                          variant={deleteConfirm === transaction.id ? "destructive" : "ghost"}
-                          size="sm"
                           onClick={() => handleDelete(transaction.id!)}
+                          className={`h-8 w-8 p-0 ${deleteConfirm === transaction.id ? 'bg-red-500 hover:bg-red-600 text-white' : ''}`}
                         >
                           <Trash2 className="h-4 w-4" />
                         </Button>

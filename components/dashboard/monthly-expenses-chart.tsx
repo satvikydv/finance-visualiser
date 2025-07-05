@@ -2,17 +2,18 @@
 
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
+import { useCurrency } from '@/hooks/useCurrency';
+import { formatCurrency } from '@/lib/utils';
 
 interface MonthlyExpensesChartProps {
   data: { month: string; amount: number }[];
 }
 
 export default function MonthlyExpensesChart({ data }: MonthlyExpensesChartProps) {
-  const formatCurrency = (value: number) => {
-    return new Intl.NumberFormat('en-US', {
-      style: 'currency',
-      currency: 'USD',
-    }).format(value);
+  const { currency } = useCurrency();
+
+  const formatCurrencyForChart = (value: number) => {
+    return formatCurrency(value, currency);
   };
 
   return (
@@ -22,7 +23,7 @@ export default function MonthlyExpensesChart({ data }: MonthlyExpensesChartProps
       </CardHeader>
       <CardContent>
         <ResponsiveContainer width="100%" height={300}>
-          <BarChart data={data}>
+          <BarChart data={data} margin={{ left: 20, right: 20, top: 20, bottom: 20 }}>
             <CartesianGrid strokeDasharray="3 3" className="stroke-muted" />
             <XAxis 
               dataKey="month" 
@@ -32,10 +33,11 @@ export default function MonthlyExpensesChart({ data }: MonthlyExpensesChartProps
             <YAxis 
               className="text-sm"
               tick={{ fill: 'hsl(var(--foreground))' }}
-              tickFormatter={formatCurrency}
+              tickFormatter={formatCurrencyForChart}
+              width={80}
             />
             <Tooltip 
-              formatter={(value) => [formatCurrency(value as number), 'Amount']}
+              formatter={(value) => [formatCurrencyForChart(value as number), 'Amount']}
               labelStyle={{ color: 'hsl(var(--foreground))' }}
               contentStyle={{ 
                 backgroundColor: 'hsl(var(--background))',

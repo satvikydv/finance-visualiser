@@ -8,6 +8,8 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { Progress } from '@/components/ui/progress';
 import { Pencil, Trash2, Plus } from 'lucide-react';
 import { Alert, AlertDescription } from '@/components/ui/alert';
+import { useCurrency } from '@/hooks/useCurrency';
+import { formatCurrency } from '@/lib/utils';
 
 interface BudgetsTableProps {
   budgets: Budget[];
@@ -25,13 +27,7 @@ export default function BudgetsTable({
   onAdd 
 }: BudgetsTableProps) {
   const [deleteConfirm, setDeleteConfirm] = useState<string | null>(null);
-
-  const formatCurrency = (amount: number) => {
-    return new Intl.NumberFormat('en-US', {
-      style: 'currency',
-      currency: 'USD',
-    }).format(amount);
-  };
+  const { currency } = useCurrency();
 
   const handleDelete = (id: string) => {
     if (deleteConfirm === id) {
@@ -92,23 +88,22 @@ export default function BudgetsTable({
                   return (
                     <TableRow key={budget.id}>
                       <TableCell className="font-medium">{budget.category}</TableCell>
-                      <TableCell>{formatCurrency(budget.monthlyLimit)}</TableCell>
+                      <TableCell>{formatCurrency(budget.monthlyLimit, currency)}</TableCell>
                       <TableCell>
                         <span className={status.isOverBudget ? 'text-red-600 dark:text-red-400 font-semibold' : ''}>
-                          {formatCurrency(status.spent)}
+                          {formatCurrency(status.spent, currency)}
                         </span>
                       </TableCell>
                       <TableCell>
                         <span className={status.remaining < 0 ? 'text-red-600 dark:text-red-400 font-semibold' : 'text-green-600 dark:text-green-400'}>
-                          {formatCurrency(status.remaining)}
+                          {formatCurrency(status.remaining, currency)}
                         </span>
                       </TableCell>
                       <TableCell>
                         <div className="flex items-center gap-2">
                           <Progress 
                             value={status.percentage} 
-                            className="w-20"
-                            indicatorClassName={status.isOverBudget ? 'bg-red-500' : 'bg-green-500'}
+                            className={`w-20 ${status.isOverBudget ? '[&>div]:bg-red-500' : '[&>div]:bg-green-500'}`}
                           />
                           <span className={`text-sm font-medium ${status.isOverBudget ? 'text-red-600 dark:text-red-400' : ''}`}>
                             {status.percentage.toFixed(0)}%
@@ -118,16 +113,14 @@ export default function BudgetsTable({
                       <TableCell className="text-right">
                         <div className="flex gap-2 justify-end">
                           <Button
-                            variant="ghost"
-                            size="sm"
                             onClick={() => onEdit(budget)}
+                            className="h-8 w-8 p-0"
                           >
                             <Pencil className="h-4 w-4" />
                           </Button>
                           <Button
-                            variant={deleteConfirm === budget.id ? "destructive" : "ghost"}
-                            size="sm"
                             onClick={() => handleDelete(budget.id!)}
+                            className={`h-8 w-8 p-0 ${deleteConfirm === budget.id ? 'bg-red-500 hover:bg-red-600 text-white' : ''}`}
                           >
                             <Trash2 className="h-4 w-4" />
                           </Button>

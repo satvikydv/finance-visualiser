@@ -3,6 +3,8 @@
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend } from 'recharts';
 import { Budget } from '@/lib/schemas';
+import { useCurrency } from '@/hooks/useCurrency';
+import { formatCurrency } from '@/lib/utils';
 
 interface BudgetVsActualChartProps {
   budgets: Budget[];
@@ -10,11 +12,10 @@ interface BudgetVsActualChartProps {
 }
 
 export default function BudgetVsActualChart({ budgets, categorySpending }: BudgetVsActualChartProps) {
-  const formatCurrency = (value: number) => {
-    return new Intl.NumberFormat('en-US', {
-      style: 'currency',
-      currency: 'USD',
-    }).format(value);
+  const { currency } = useCurrency();
+
+  const formatCurrencyForChart = (value: number) => {
+    return formatCurrency(value, currency);
   };
 
   const data = budgets.map(budget => ({
@@ -43,10 +44,11 @@ export default function BudgetVsActualChart({ budgets, categorySpending }: Budge
             <YAxis 
               className="text-sm"
               tick={{ fill: 'hsl(var(--foreground))' }}
-              tickFormatter={formatCurrency}
+              tickFormatter={formatCurrencyForChart}
+              width={80}
             />
             <Tooltip 
-              formatter={(value, name) => [formatCurrency(value as number), name === 'budget' ? 'Budget' : 'Actual']}
+              formatter={(value, name) => [formatCurrencyForChart(value as number), name === 'budget' ? 'Budget' : 'Actual']}
               labelStyle={{ color: 'hsl(var(--foreground))' }}
               contentStyle={{ 
                 backgroundColor: 'hsl(var(--background))',

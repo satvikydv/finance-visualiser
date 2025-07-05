@@ -2,6 +2,7 @@ import './globals.css';
 import type { Metadata } from 'next';
 import { Inter } from 'next/font/google';
 import MainLayout from '@/components/layout/main-layout';
+import { CurrencyProvider } from '@/hooks/useCurrency';
 
 const inter = Inter({ subsets: ['latin'] });
 
@@ -18,7 +19,9 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <body className={inter.className}>
-        <MainLayout>{children}</MainLayout>
+        <CurrencyProvider>
+          <MainLayout>{children}</MainLayout>
+        </CurrencyProvider>
       </body>
     </html>
   );

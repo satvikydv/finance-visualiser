@@ -2,6 +2,8 @@
 
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip, Legend } from 'recharts';
+import { useCurrency } from '@/hooks/useCurrency';
+import { formatCurrency } from '@/lib/utils';
 
 interface CategoryPieChartProps {
   data: { category: string; amount: number }[];
@@ -22,11 +24,10 @@ const COLORS = [
 ];
 
 export default function CategoryPieChart({ data }: CategoryPieChartProps) {
-  const formatCurrency = (value: number) => {
-    return new Intl.NumberFormat('en-US', {
-      style: 'currency',
-      currency: 'USD',
-    }).format(value);
+  const { currency } = useCurrency();
+
+  const formatCurrencyForChart = (value: number) => {
+    return formatCurrency(value, currency);
   };
 
   return (
@@ -36,7 +37,7 @@ export default function CategoryPieChart({ data }: CategoryPieChartProps) {
       </CardHeader>
       <CardContent>
         <ResponsiveContainer width="100%" height={300}>
-          <PieChart>
+          <PieChart margin={{ left: 20, right: 20, top: 20, bottom: 20 }}>
             <Pie
               data={data}
               cx="50%"
@@ -52,7 +53,7 @@ export default function CategoryPieChart({ data }: CategoryPieChartProps) {
               ))}
             </Pie>
             <Tooltip 
-              formatter={(value) => [formatCurrency(value as number), 'Amount']}
+              formatter={(value) => [formatCurrencyForChart(value as number), 'Amount']}
               contentStyle={{ 
                 backgroundColor: 'hsl(var(--background))',
                 border: '1px solid hsl(var(--border))',

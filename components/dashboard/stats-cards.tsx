@@ -2,6 +2,8 @@
 
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { DollarSign, TrendingUp, TrendingDown, PiggyBank } from 'lucide-react';
+import { useCurrency } from '@/hooks/useCurrency';
+import { formatCurrency } from '@/lib/utils';
 
 interface StatsCardsProps {
   totalExpenses: number;
@@ -16,24 +18,19 @@ export default function StatsCards({
   budgetUsage, 
   transactionCount 
 }: StatsCardsProps) {
-  const formatCurrency = (amount: number) => {
-    return new Intl.NumberFormat('en-US', {
-      style: 'currency',
-      currency: 'USD',
-    }).format(amount);
-  };
+  const { currency } = useCurrency();
 
   const cards = [
     {
       title: 'Total Expenses',
-      value: formatCurrency(totalExpenses),
+      value: formatCurrency(totalExpenses, currency),
       icon: DollarSign,
       color: 'text-red-500',
       bgColor: 'bg-red-50 dark:bg-red-900/20',
     },
     {
       title: 'Monthly Expenses',
-      value: formatCurrency(monthlyExpenses),
+      value: formatCurrency(monthlyExpenses, currency),
       icon: TrendingDown,
       color: 'text-orange-500',
       bgColor: 'bg-orange-50 dark:bg-orange-900/20',

@@ -4,18 +4,15 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Transaction } from '@/lib/schemas';
 import { formatDistanceToNow } from 'date-fns';
+import { useCurrency } from '@/hooks/useCurrency';
+import { formatCurrency } from '@/lib/utils';
 
 interface RecentTransactionsProps {
   transactions: Transaction[];
 }
 
 export default function RecentTransactions({ transactions }: RecentTransactionsProps) {
-  const formatCurrency = (amount: number) => {
-    return new Intl.NumberFormat('en-US', {
-      style: 'currency',
-      currency: 'USD',
-    }).format(amount);
-  };
+  const { currency } = useCurrency();
 
   const recentTransactions = transactions.slice(0, 5);
 
@@ -46,7 +43,7 @@ export default function RecentTransactions({ transactions }: RecentTransactionsP
                 </div>
                 <div className="text-right">
                   <p className="font-semibold text-red-600 dark:text-red-400">
-                    -{formatCurrency(transaction.amount)}
+                    -{formatCurrency(transaction.amount, currency)}
                   </p>
                 </div>
               </div>
